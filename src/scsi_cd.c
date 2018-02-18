@@ -639,7 +639,10 @@ static int scsi_cd_command(uint8_t *cdb, void *p)
                         data->cdpos++;
                         data->cdlen--;
                         if (!data->cdlen)
+                        {
+                                c++;
                                 break;
+                        }
                 }
                 readflash_set(READFLASH_HDC, data->id);
 
@@ -694,7 +697,10 @@ static int scsi_cd_command(uint8_t *cdb, void *p)
                         data->cdpos++;
                         data->cdlen--;
                         if (!data->cdlen)
+                        {
+                                c++;
                                 break;
+                        }
                 }
 
                 data->data_pos_read = 0;
