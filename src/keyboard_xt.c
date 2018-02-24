@@ -8,6 +8,7 @@
 #include "sound_speaker.h"
 #include "tandy_eeprom.h"
 #include "timer.h"
+#include "video.h"
 
 #include "keyboard.h"
 #include "keyboard_xt.h"
@@ -109,9 +110,9 @@ uint8_t keyboard_xt_read(uint16_t port, void *priv)
                 case 0x60:
                 if ((romset == ROM_IBMPC) && (keyboard_xt.pb & 0x80))
                 {
-                        if (VGA || gfxcard == GFX_EGA) 
+                        if (video_is_ega_vga())
                                 temp = 0x4D;
-                        else if (MDA) 
+                        else if (video_is_mda())
                                 temp = 0x7D;
                         else            
                                 temp = 0x6D;
@@ -159,9 +160,9 @@ uint8_t keyboard_xt_read(uint16_t port, void *priv)
                 {
                         if (keyboard_xt.pb & 0x08)
                         {
-                                if (VGA || gfxcard == GFX_EGA)
+                                if (video_is_ega_vga())
                                         temp = 4;
-                                else if (MDA)
+                                else if (video_is_mda())
                                         temp = 7;
                                 else
                                         temp = 6;
