@@ -11,6 +11,7 @@
 #include "x86_ops.h"
 #include "mem.h"
 #include "codegen.h"
+#include "cpu.h"
 
 HWND status_hwnd;
 int status_is_open = 0;
@@ -56,7 +57,7 @@ static BOOL CALLBACK status_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
 #endif*/
                         segareads,
                         segawrites,
-                        clockrate - scycles_lost,
+                        cpu_get_speed() - scycles_lost,
                         pit_timer0_freq(),
                         ((double)main_time * 100.0) / status_diff,
                         ((double)main_time * 100.0) / timer_freq
