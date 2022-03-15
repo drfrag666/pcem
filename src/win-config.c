@@ -323,13 +323,14 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
                 SendMessage(h, BM_SETCHECK, ((cpu_flags & CPU_SUPPORTS_DYNAREC) && cpu_use_dynarec) || (cpu_flags & CPU_REQUIRES_DYNAREC), 0);
 
                 h = GetDlgItem(hdlg, IDC_COMBOSPD);
+                SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Default");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"8-bit");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Slow 16-bit");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Fast 16-bit");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Slow VLB/PCI");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Mid  VLB/PCI");
                 SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Fast VLB/PCI");                
-                SendMessage(h, CB_SETCURSEL, video_speed, 0);
+                SendMessage(h, CB_SETCURSEL, video_speed+1, 0);
 
                 h = GetDlgItem(hdlg, IDC_MEMSPIN);
                 SendMessage(h, UDM_SETBUDDY, (WPARAM)GetDlgItem(hdlg, IDC_MEMTEXT), 0);
@@ -582,7 +583,7 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
                         }
 
                         h = GetDlgItem(hdlg, IDC_COMBOSPD);
-                        video_speed = SendMessage(h, CB_GETCURSEL, 0, 0);
+                        video_speed = SendMessage(h, CB_GETCURSEL, 0, 0) -1;
 
                         cpu_manufacturer = temp_cpu_m;
                         cpu = temp_cpu;
