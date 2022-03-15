@@ -107,7 +107,6 @@ static video_timings_t timing_oti067   = {VIDEO_ISA, 6, 8,16, 6, 8,16};
 static video_timings_t timing_vga      = {VIDEO_ISA, 8,16,32, 8,16,32};
 static video_timings_t timing_ps1_svga = {VIDEO_ISA, 6, 8,16, 6, 8,16};
 static video_timings_t timing_t3100e   = {VIDEO_ISA, 8,16,32, 8,16,32};
-static video_timings_t timing_t1000    = {VIDEO_ISA, 8,16,32, 8,16,32};
 
 int video_card_available(int card)
 {
@@ -306,10 +305,6 @@ void video_updatetiming()
 
         		case ROM_T3100E:
                         timing = &timing_t3100e;
-                        break;
-
-        		case ROM_T1000:
-                        timing = &timing_t1000;
                         break;
                         
                         default:
