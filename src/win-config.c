@@ -161,80 +161,78 @@ static void recalc_net_list(HWND hdlg, int model)
 }
 #endif
 
-static void recalc_hdd_list(HWND hdlg, int model, int use_selected_hdd)
+static void recalc_hdd_list(HWND hdlg, int model, int use_selected_hdd, int force_ide)
 {
         HWND h;
-        
+        char *s;
+        int valid = 0;
+        char old_name[16];
+        int c, d;
+
         h = GetDlgItem(hdlg, IDC_COMBOHDD);
-        
-        if (models[model].flags & MODEL_HAS_IDE)
+
+        if (force_ide)
+                strcpy(old_name, "ide");
+        else if (use_selected_hdd)
         {
-                SendMessage(h, CB_RESETCONTENT, 0, 0);
-                SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"Internal IDE");
-                EnableWindow(h, FALSE);
-                SendMessage(h, CB_SETCURSEL, 0, 0);
+                c = SendMessage(h, CB_GETCURSEL, 0, 0);
+
+                if (c != -1 && hdd_names[c])
+                        strncpy(old_name, hdd_names[c], sizeof(old_name)-1);
+                else
+                {
+                        if (models[model].flags & MODEL_HAS_IDE)
+                                strcpy(old_name, "none");
+                        else
+                                strcpy(old_name, "ide");
+                }
         }
         else
+                strncpy(old_name, hdd_controller_name, sizeof(old_name)-1);
+
+        SendMessage(h, CB_RESETCONTENT, 0, 0);
+        c = d = 0;
+        while (1)
         {
-                char *s;
-                int valid = 0;
-                char old_name[16];
-                int c, d;
-
-                if (use_selected_hdd)
+                s = hdd_controller_get_name(c);
+                if (s[0] == 0)
+                        break;
+                if ((((hdd_controller_get_flags(c) & DEVICE_AT) && !(models[model].flags & MODEL_AT)) ||
+                        (hdd_controller_get_flags(c) & DEVICE_MCA) != (models[model].flags & MODEL_MCA)) && c)
                 {
-                        c = SendMessage(h, CB_GETCURSEL, 0, 0);
-
-                        if (c != -1 && hdd_names[c])
-                                strncpy(old_name, hdd_names[c], sizeof(old_name)-1);
-                        else
-                                strcpy(old_name, "none");
-                }
-                else
-                        strncpy(old_name, hdd_controller_name, sizeof(old_name)-1);
-
-                SendMessage(h, CB_RESETCONTENT, 0, 0);
-                c = d = 0;
-                while (1)
-                {
-                        s = hdd_controller_get_name(c);
-                        if (s[0] == 0)
-                                break;
-                        if ((((hdd_controller_get_flags(c) & DEVICE_AT) && !(models[model].flags & MODEL_AT)) ||
-                             (hdd_controller_get_flags(c) & DEVICE_MCA) != (models[model].flags & MODEL_MCA)) && c)
-                        {
-                                c++;
-                                continue;
-                        }
-                        if ((((hdd_controller_get_flags(c) & DEVICE_PS1) && models[model].id != ROM_IBMPS1_2011) ||
-                            (!(hdd_controller_get_flags(c) & DEVICE_PS1) && models[model].id == ROM_IBMPS1_2011)) && c)
-                        {
-                                c++;
-                                continue;
-                        }
-                        if (!hdd_controller_available(c))
-                        {
-                                c++;
-                                continue;
-                        }
-                        SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)s);
-                        hdd_names[d] = hdd_controller_get_internal_name(c);
-                        if (!strcmp(old_name, hdd_names[d]))
-                        {
-                                SendMessage(h, CB_SETCURSEL, d, 0);
-                                valid = 1;
-                        }
                         c++;
-                        d++;
+                        continue;
                 }
+                if ((((hdd_controller_get_flags(c) & DEVICE_PS1) && models[model].id != ROM_IBMPS1_2011) ||
+                    (!(hdd_controller_get_flags(c) & DEVICE_PS1) && models[model].id == ROM_IBMPS1_2011)) && c)
+                {
+                        c++;
+                        continue;
+                }
+                if (!hdd_controller_available(c))
+                {
+                        c++;
+                        continue;
+                }
+                SendMessage(h, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)s);
+                hdd_names[d] = hdd_controller_get_internal_name(c);
 
-                if (!valid)
-                        SendMessage(h, CB_SETCURSEL, 0, 0);
-                
-                EnableWindow(h, TRUE);
+                if (!strcmp(old_name, hdd_names[d]))
+                {
+                        SendMessage(h, CB_SETCURSEL, d, 0);
+                        valid = 1;
+                }
+                c++;
+                d++;
         }
+
+        if (!valid)
+                SendMessage(h, CB_SETCURSEL, 0, 0);
+
+        EnableWindow(h, TRUE);
 }
 
+static int prev_model;
 static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
         char temp_str[256];
@@ -278,6 +276,7 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
                         c++;
                 }
                 SendMessage(h, CB_SETCURSEL, modeltolist[model], 0);
+                prev_model = model;
 
                 recalc_vid_list(hdlg, romstomodel[romset]);
 
@@ -454,7 +453,7 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
                 }
                 SendMessage(h, CB_SETCURSEL, settings_mouse_to_list[mouse_type], 0);
 
-                recalc_hdd_list(hdlg, romstomodel[romset], 0);
+                recalc_hdd_list(hdlg, romstomodel[romset], 0, 0);
 
 #ifdef USE_NETWORKING
                 recalc_net_list(hdlg, romstomodel[romset]);
@@ -614,9 +613,16 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
                         case IDC_COMBO1:
                         if (HIWORD(wParam) == CBN_SELCHANGE)
                         {
+							    int force_ide = 0;
+
                                 h = GetDlgItem(hdlg,IDC_COMBO1);
                                 temp_model = listtomodel[SendMessage(h,CB_GETCURSEL,0,0)];
+              
+			                    if ((models[temp_model].flags & MODEL_HAS_IDE) && !(models[prev_model].flags & MODEL_HAS_IDE))
+                                        force_ide = 1;
                                 
+                                prev_model = temp_model;
+
                                 /*Rebuild manufacturer list*/
                                 h = GetDlgItem(hdlg, IDC_COMBOCPUM);
                                 temp_cpu_m = SendMessage(h, CB_GETCURSEL, 0, 0);
@@ -723,7 +729,7 @@ static BOOL CALLBACK config_dlgproc(HWND hdlg, UINT message, WPARAM wParam, LPAR
 
                                 recalc_vid_list(hdlg, temp_model);
                                 
-                                recalc_hdd_list(hdlg, temp_model, 1);
+                                recalc_hdd_list(hdlg, temp_model, 1, force_ide);
 
                                 recalc_snd_list(hdlg, temp_model);
 #ifdef USE_NETWORKING
