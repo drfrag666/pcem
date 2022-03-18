@@ -491,7 +491,7 @@
 
 	<object class="wxDialog" name="ConfigureDlg">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
-		<title>Configure PCem</title>
+		<title>Configure PCem CL</title>
 		<centered>1</centered>
 		<object class="wxPanel" name="ROOT_PANEL">
 		<object class="wxFlexGridSizer">
@@ -2575,7 +2575,7 @@
 	</object>
 
 	<object class="wxDialog" name="ConfigureSelectionDlg">
-		<title>PCem Configuration Manager</title>
+		<title>PCem CL Configuration Manager</title>
 		<centered>1</centered>
 		<object class="wxFlexGridSizer">
 			<rows>1</rows>
@@ -2729,7 +2729,7 @@
 
 	<object class="wxDialog" name="ShaderManagerDlg">
 		<style>wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP</style>
-		<title>PCem Shader Manager</title>
+		<title>PCem CL Shader Manager</title>
 		<centered>1</centered>
 		<object class="wxPanel" name="ROOT_PANEL">
 			<object class="wxBoxSizer">
@@ -2834,7 +2834,7 @@
 
 	<object class="wxDialog" name="ConfirmRememberDlg">
 		<style>wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP</style>
-		<title>PCem</title>
+		<title>PCem CL</title>
 		<centered>1</centered>
 		<object class="wxPanel" name="ROOT_PANEL">
 			<object class="wxBoxSizer">
@@ -2991,7 +2991,7 @@
 					<flag>wxALL</flag>
 					<border>5</border>
 					<object class="wxStaticText">
-						<label>PCem v13.1\nhttps://pcem-emulator.co.uk/\n\nThis program is licensed under the GNU General Public License version 2.\nSee COPYING for more details.\n\nToolbar-icons made by Roundicons (https://roundicons.com/) from www.flaticon.com\nOther icons made by FatCow (http://www.fatcow.com/free-icons/)</label>
+						<label>PCem CL v13.2\nhttps://pcem-emulator.co.uk/\n\nThis program is licensed under the GNU General Public License version 2.\nSee COPYING for more details.\n\nToolbar-icons made by Roundicons (https://roundicons.com/) from www.flaticon.com\nOther icons made by FatCow (http://www.fatcow.com/free-icons/)</label>
 						<wrap>-1</wrap>
 					</object>
 				</object>
