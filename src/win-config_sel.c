@@ -80,6 +80,9 @@ static BOOL CALLBACK config_selection_dlgproc(HWND hdlg, UINT message, WPARAM wP
                                         pclog("Config name %s\n", cfg);
                                         
                                         strcpy(config_file_default, cfg);
+                                        strcpy(config_name, s);
+                                        if (config_name[strlen(config_name)-1] == '.')
+                                                config_name[strlen(config_name)-1] = 0;
 
                                         EndDialog(hdlg, 1);
 //                                        pause = 0;
